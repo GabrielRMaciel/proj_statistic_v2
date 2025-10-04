@@ -1,9 +1,9 @@
 // js/main.js
 import { loadAllData } from './data.js';
-import { 
+import {
     renderNavigation, renderFilters, renderGlossary,
     renderChapterOverview, renderChapterDistribution,
-    renderChapterTemporal, renderChapterRegional, renderChapterWIP
+    renderChapterTemporal, renderChapterRegional, renderChapterCorrelation, renderChapterInsights
 } from './ui.js';
 import { destroyAllCharts } from './charts.js';
 
@@ -116,10 +116,10 @@ function renderActiveChapter() {
             renderChapterRegional(contentEl, filteredData, getCachedStats); 
             break;
         case 'correlation':
-            renderChapterWIP(contentEl, 'Correlações', 'Esta seção analisará a relação entre variáveis, como preço e data.');
+            renderChapterCorrelation(contentEl, filteredData, getCachedStats);
             break;
         case 'insights':
-            renderChapterWIP(contentEl, 'Insights', 'Esta seção irá sintetizar as principais descobertas e fornecer recomendações.');
+            renderChapterInsights(contentEl, allData, filteredData, getCachedStats, detectOutliers);
             break;
     }
     lucide.createIcons();
