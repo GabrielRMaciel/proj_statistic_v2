@@ -73,30 +73,27 @@ export function renderChapterOverview(contentEl, dataToUse, getCachedStats) {
     createBarChart('dist-brand', Object.keys(top10Brands), Object.values(top10Brands), { indexAxis: 'y' });
 }
 
-// Restante do arquivo ui.js... (O conteúdo das outras funções permanece o mesmo)
-// ... (cole o restante do seu arquivo ui.js aqui)
+export function renderChapterDistribution(contentEl, filteredData, getCachedStats, detectOutliers) {
+    if (filteredData.length === 0) {
+        contentEl.innerHTML = createEmptyState();
+        return;
+    }
 
+    const prices = filteredData.map(d => d.valorDeVenda);
+    const stats = getCachedStats('distribution', () => {
+        const sortedPrices = [...prices].sort((a, b) => a - b);
+        return {
+            mean: math.mean(prices), median: math.median(sortedPrices), mode: math.mode(prices)[0] || 'N/A',
+            std: math.std(prices, 'unbiased'), min: sortedPrices[0], max: sortedPrices[sortedPrices.length - 1],
+            q1: math.quantileSeq(sortedPrices, 0.25, false), q3: math.quantileSeq(sortedPrices, 0.75, false),
+        };
+    });
+    stats.cv = stats.mean ? (stats.std / stats.mean) * 100 : 0;
+    stats.iqr = stats.q3 - stats.q1;
+    stats.outliers = detectOutliers(prices, stats.q1, stats.q3, stats.iqr);
 
-function createMetricCard(title, value, tooltipText, iconName) {
-    return `<div class="bg-white p-4 rounded-lg shadow has-tooltip relative metric-card">
-        <div class="flex items-start justify-between">
-            <div><p class="text-sm text-gray-500">${title}</p><p class="text-2xl font-bold text-gray-800">${value}</p></div>
-            <div class="bg-blue-100 p-2 rounded-full">
-                <i data-lucide="${iconName}" class="h-6 w-6 text-blue-600"></i>
-            </div>
-        </div>
-        <div class="tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-800 text-white text-xs rounded py-2 px-3 z-50">${tooltipText}</div>
-    </div>`;
-}
-
-function createChartCard(canvasId, title, subtitle) {
-    return `<div class="bg-white p-6 rounded-lg shadow flex flex-col chart-card">
-        <div>
-            <h3 class="text-lg font-semibold">${title}</h3>
-            <p class="text-sm text-gray-500 mb-4">${subtitle}</p>
-        </div>
-        <div class="relative h-64 md:h-72">
-            <canvas id="${canvasId}"></canvas>
-        </div>
-    </div>`;
-}
+    contentEl.innerHTML = `
+         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-4">Estatísticas Descritivas do Preço (R
