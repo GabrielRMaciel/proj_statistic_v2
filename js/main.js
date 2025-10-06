@@ -26,13 +26,11 @@ const chapters = [
 
 async function main() {
     try {
-        // ========== INÍCIO DA CORREÇÃO ==========
         // Registra manualmente o controller do Box Plot.
         // O plugin anexa seus componentes ao objeto global `ChartBoxPlot`.
         if (window.ChartBoxPlot) {
             Chart.register(ChartBoxPlot.BoxPlotController, ChartBoxPlot.BoxAndWiskers);
         }
-        // ========== FIM DA CORREÇÃO ==========
 
         allData = await loadAllData();
         if (allData.length === 0) {
@@ -88,7 +86,9 @@ function applyFilters() {
 
 function setActiveChapter(chapterId) {
     activeChapter = chapterId;
-    renderNavigation(chapters, active-chapter);
+    // ========== INÍCIO DA CORREÇÃO ==========
+    renderNavigation(chapters, activeChapter); // Corrigido de active-chapter para activeChapter
+    // ========== FIM DA CORREÇÃO ==========
     lucide.createIcons();
     renderActiveChapter();
 }
