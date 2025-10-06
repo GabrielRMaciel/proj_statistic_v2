@@ -26,12 +26,8 @@ const chapters = [
 
 async function main() {
     try {
-        // Registra manualmente o controller do Box Plot.
-        // O plugin anexa seus componentes ao objeto global `ChartBoxPlot`.
-        if (window.ChartBoxPlot) {
-            Chart.register(ChartBoxPlot.BoxPlotController, ChartBoxPlot.BoxAndWiskers);
-        }
-
+        // O código de registro do boxplot foi movido para o arquivo js/charts.js
+        
         allData = await loadAllData();
         if (allData.length === 0) {
             throw new Error("Nenhum dado foi carregado. Verifique se os arquivos CSV estão na pasta 'data/' e se os nomes correspondem. Veja o console para erros de rede (404 Not Found).");
@@ -86,9 +82,7 @@ function applyFilters() {
 
 function setActiveChapter(chapterId) {
     activeChapter = chapterId;
-    // ========== INÍCIO DA CORREÇÃO ==========
-    renderNavigation(chapters, activeChapter); // Corrigido de active-chapter para activeChapter
-    // ========== FIM DA CORREÇÃO ==========
+    renderNavigation(chapters, activeChapter);
     lucide.createIcons();
     renderActiveChapter();
 }
