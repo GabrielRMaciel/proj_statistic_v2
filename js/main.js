@@ -1,7 +1,7 @@
 // js/main.js
 import { loadAllData } from './data.js';
 import {
-    renderNavigation, renderFilters, renderGlossary,
+    renderNavigation, renderFilters,
     renderChapterOverview, renderChapterDistribution,
     renderChapterTemporal, renderChapterRegional, renderChapterCorrelation, renderChapterInsights
 } from './ui.js';
@@ -48,7 +48,7 @@ async function main() {
 function initUI() {
     renderNavigation(chapters, activeChapter);
     renderFilters(allData);
-    renderGlossary();
+    // CHAMADA PARA renderGlossary() REMOVIDA
     setupEventListeners();
     lucide.createIcons();
 }
