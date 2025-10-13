@@ -4,7 +4,7 @@ export const BAIRRO_REGIONAL_MAP = {
     'ALTO BARROCA': 'Oeste', 'ALTO DOS PINHEIROS': 'Noroeste', 'ANCHIETA': 'Centro-Sul', 'ANDYARA': 'Venda Nova',
     'BARREIRO': 'Barreiro', 'BARRO PRETO': 'Centro-Sul', 'BARROCA': 'Oeste', 'BELVEDERE': 'Centro-Sul',
     'BETANIA': 'Oeste', 'BOA VIAGEM': 'Centro-Sul', 'BOA VISTA': 'Leste', 'BONFIM': 'Noroeste',
-    'BRASIL INDUSTRIAL': 'Barreiro', 'BURITIS': 'Oeste', 'CACHOEIRinha': 'Noroeste', 'CAICARA': 'Noroeste',
+    'BRASIL INDUSTRIAL': 'Barreiro', 'BURITIS': 'Oeste', 'CACHOEIRINHA': 'Noroeste', 'CAICARA': 'Noroeste',
     'CALAFATE': 'Oeste', 'CARLOS PRATES': 'Noroeste', 'CASTELO': 'Pampulha', 'CENTRO': 'Centro-Sul',
     'CIDADE JARDIM': 'Centro-Sul', 'CIDADE NOVA': 'Nordeste', 'CINQUENTENARIO': 'Oeste', 'COLEGIO BATISTA': 'Leste',
     'CONCORDIA': 'Nordeste', 'CONJUNTO CALIFÓRNIA': 'Noroeste', 'CORACAO DE JESUS': 'Centro-Sul',
@@ -56,15 +56,13 @@ export function formatCurrency(value) {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// ===== FUNÇÃO MOVIDA PARA CÁ =====
 export function detectOutliers(data, q1, q3, iqr) {
     if (typeof q1 !== 'number' || typeof q3 !== 'number' || typeof iqr !== 'number') return [];
     const lowerBound = q1 - 1.5 * iqr;
     const upperBound = q3 + 1.5 * iqr;
     return data.filter(d => d < lowerBound || d > upperBound);
-};
+}
 
-// ===== FUNÇÃO MOVIDA PARA CÁ =====
 export function calculateCorrelation(arr1, arr2) {
     if (arr1.length !== arr2.length || arr1.length === 0) return 0;
 
