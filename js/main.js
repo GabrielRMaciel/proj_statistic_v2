@@ -1,7 +1,7 @@
 // js/main.js
 import { loadAllData } from './data.js';
 import {
-    renderNavigation, renderFilters, renderGlossary,
+    renderNavigation, renderFilters,
     renderChapterOverview, renderChapterDistribution,
     renderChapterTemporal, renderChapterRegional, renderChapterCorrelation, renderChapterInsights
 } from './ui.js';
@@ -129,3 +129,4 @@ function renderActiveChapter() {
 
 // --- Iniciar a aplicação ---
 document.addEventListener('DOMContentLoaded', main);
+
