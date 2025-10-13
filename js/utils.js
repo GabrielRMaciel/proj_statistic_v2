@@ -4,7 +4,7 @@ export const BAIRRO_REGIONAL_MAP = {
     'ALTO BARROCA': 'Oeste', 'ALTO DOS PINHEIROS': 'Noroeste', 'ANCHIETA': 'Centro-Sul', 'ANDYARA': 'Venda Nova',
     'BARREIRO': 'Barreiro', 'BARRO PRETO': 'Centro-Sul', 'BARROCA': 'Oeste', 'BELVEDERE': 'Centro-Sul',
     'BETANIA': 'Oeste', 'BOA VIAGEM': 'Centro-Sul', 'BOA VISTA': 'Leste', 'BONFIM': 'Noroeste',
-    'BRASIL INDUSTRIAL': 'Barreiro', 'BURITIS': 'Oeste', 'CACHOEIRINHA': 'Noroeste', 'CAICARA': 'Noroeste',
+    'BRASIL INDUSTRIAL': 'Barreiro', 'BURITIS': 'Oeste', 'CACHOEIRinha': 'Noroeste', 'CAICARA': 'Noroeste',
     'CALAFATE': 'Oeste', 'CARLOS PRATES': 'Noroeste', 'CASTELO': 'Pampulha', 'CENTRO': 'Centro-Sul',
     'CIDADE JARDIM': 'Centro-Sul', 'CIDADE NOVA': 'Nordeste', 'CINQUENTENARIO': 'Oeste', 'COLEGIO BATISTA': 'Leste',
     'CONCORDIA': 'Nordeste', 'CONJUNTO CALIFÓRNIA': 'Noroeste', 'CORACAO DE JESUS': 'Centro-Sul',
@@ -54,4 +54,35 @@ export function parseDate(dateString) {
 export function formatCurrency(value) {
     if (typeof value !== 'number' || isNaN(value)) return 'N/A';
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// ===== FUNÇÃO MOVIDA PARA CÁ =====
+export function detectOutliers(data, q1, q3, iqr) {
+    if (typeof q1 !== 'number' || typeof q3 !== 'number' || typeof iqr !== 'number') return [];
+    const lowerBound = q1 - 1.5 * iqr;
+    const upperBound = q3 + 1.5 * iqr;
+    return data.filter(d => d < lowerBound || d > upperBound);
+};
+
+// ===== FUNÇÃO MOVIDA PARA CÁ =====
+export function calculateCorrelation(arr1, arr2) {
+    if (arr1.length !== arr2.length || arr1.length === 0) return 0;
+
+    const mean1 = _.mean(arr1);
+    const mean2 = _.mean(arr2);
+
+    let numerator = 0;
+    let sum1 = 0;
+    let sum2 = 0;
+
+    for (let i = 0; i < arr1.length; i++) {
+        const diff1 = arr1[i] - mean1;
+        const diff2 = arr2[i] - mean2;
+        numerator += diff1 * diff2;
+        sum1 += diff1 * diff1;
+        sum2 += diff2 * diff2;
+    }
+
+    const denominator = Math.sqrt(sum1 * sum2);
+    return denominator === 0 ? 0 : numerator / denominator;
 }
