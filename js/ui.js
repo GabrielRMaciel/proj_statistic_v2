@@ -1,6 +1,6 @@
 // js/ui.js
 import { createBarChart, createDoughnutChart, createLineChart, createHistogram, createBoxPlot } from './charts.js';
-import { formatCurrency } from './utils.js';
+import { formatCurrency, calculateCorrelation } from './utils.js';
 
 // --- Funções de Renderização dos Capítulos ---
 
@@ -635,32 +635,6 @@ export function renderChapterInsights(contentEl, allData, filteredData, getCache
         </div>`;
 }
 
-export function renderChapterWIP(contentEl, title, message) {
-    contentEl.innerHTML = createWIPState(title, message);
-}
-
-function calculateCorrelation(arr1, arr2) {
-    if (arr1.length !== arr2.length || arr1.length === 0) return 0;
-
-    const mean1 = _.mean(arr1);
-    const mean2 = _.mean(arr2);
-
-    let numerator = 0;
-    let sum1 = 0;
-    let sum2 = 0;
-
-    for (let i = 0; i < arr1.length; i++) {
-        const diff1 = arr1[i] - mean1;
-        const diff2 = arr2[i] - mean2;
-        numerator += diff1 * diff2;
-        sum1 += diff1 * diff1;
-        sum2 += diff2 * diff2;
-    }
-
-    const denominator = Math.sqrt(sum1 * sum2);
-    return denominator === 0 ? 0 : numerator / denominator;
-}
-
 function generateInsights(allData, filteredData, detectOutliers) {
     const insights = [];
     const prices = allData.map(d => d.valorDeVenda);
@@ -844,6 +818,125 @@ export function renderFilters(allData) {
             </select>
         </div>`;
 }
+
+export function renderGlossary() {
+    const glossaryEl = document.getElementById('glossary');
+    const terms = [
+        {
+            term: 'Média (Média Aritmética)',
+            formula: 'x̄ = (Σx) / n',
+            def: 'A soma de todos os valores dividida pelo número de valores. Representa o "valor típico", mas é sensível a outliers. Exemplo: média de [3, 5, 7] = (3+5+7)/3 = 5.',
+            example: 'Se 3 postos cobram R$ 5,00, R$ 5,50 e R$ 6,00, a média é R$ 5,50.'
+        },
+        {
+            term: 'Mediana',
+            formula: 'Valor central dos dados ordenados',
+            def: 'O valor do meio em um conjunto de dados ordenado. 50% dos dados estão abaixo e 50% estão acima dela. É robusta a outliers, ou seja, não é afetada por valores extremos.',
+            example: 'Em [3, 5, 7, 9, 100], a mediana é 7 (valor central), enquanto a média seria 24,8 (afetada pelo 100).'
+        },
+        {
+            term: 'Moda',
+            formula: 'Valor mais frequente',
+            def: 'O valor que aparece com mais frequência em um conjunto de dados. Pode não existir (todos únicos) ou existir múltiplas modas.',
+            example: 'Em [5.0, 5.0, 5.0, 5.5, 6.0], a moda é R$ 5,00.'
+        },
+        {
+            term: 'Desvio Padrão',
+            formula: 's = √[Σ(x - x̄)² / (n-1)]',
+            def: 'Uma medida da dispersão ou variabilidade dos dados em torno da média. Quanto maior o desvio padrão, mais espalhados estão os dados. Um desvio padrão baixo indica que os dados estão próximos da média.',
+            example: 'Preços de R$ 5,00 a R$ 5,10 têm baixo desvio. Preços de R$ 4,00 a R$ 7,00 têm alto desvio.'
+        },
+        {
+            term: 'Variância',
+            formula: 's² = Σ(x - x̄)² / (n-1)',
+            def: 'O quadrado do desvio padrão. Mede a dispersão dos dados. Usada em cálculos estatísticos, mas menos intuitiva que o desvio padrão.',
+            example: 'Se desvio padrão é 0,50, a variância é 0,25.'
+        },
+        {
+            term: 'Coeficiente de Variação (CV)',
+            formula: 'CV = (s / x̄) × 100%',
+            def: 'Desvio padrão expresso como percentual da média. Permite comparar variabilidade entre datasets com médias diferentes. CV < 10% = baixa variação, 10-30% = moderada, > 30% = alta.',
+            example: 'Média R$ 5,00 com desvio R$ 0,50 tem CV de 10%.'
+        },
+        {
+            term: 'Quartis',
+            formula: 'Q1 (25%), Q2 (50%), Q3 (75%)',
+            def: 'Valores que dividem os dados ordenados em quatro partes iguais. Q1 é o primeiro quartil (25% abaixo), Q2 é a mediana (50%), Q3 é o terceiro quartil (75% abaixo).',
+            example: 'Em dados de preços ordenados, Q1 marca o preço abaixo do qual estão 25% dos postos mais baratos.'
+        },
+        {
+            term: 'Amplitude Interquartil (IQR)',
+            formula: 'IQR = Q3 - Q1',
+            def: 'A diferença entre o terceiro e primeiro quartil. Representa o "espalhamento" dos 50% centrais dos dados, sendo robusta a outliers.',
+            example: 'Se Q1 = R$ 5,00 e Q3 = R$ 6,00, IQR = R$ 1,00.'
+        },
+        {
+            term: 'Outlier (Valor Atípico)',
+            formula: 'x < Q1 - 1.5×IQR ou x > Q3 + 1.5×IQR',
+            def: 'Uma observação que está anormalmente distante de outros valores. Pode indicar erro de medição, postos premium, promoções especiais, ou genuína variabilidade do mercado.',
+            example: 'Se a maioria dos postos cobra R$ 5,00-6,00, um posto a R$ 10,00 é outlier.'
+        },
+        {
+            term: 'Correlação de Pearson',
+            formula: 'r = Σ[(x-x̄)(y-ȳ)] / √[Σ(x-x̄)²Σ(y-ȳ)²]',
+            def: 'Medida que expressa a força e direção da relação linear entre duas variáveis. Varia de -1 (correlação negativa perfeita) a +1 (correlação positiva perfeita). Zero indica ausência de correlação linear. IMPORTANTE: Correlação não implica causalidade.',
+            example: 'r = 0.8 entre preço e tempo indica forte tendência de aumento. r = -0.8 indicaria forte tendência de queda.'
+        },
+        {
+            term: 'Coeficiente de Determinação (R²)',
+            formula: 'R² = r²',
+            def: 'Percentual da variação em uma variável que pode ser explicado pela outra. R² = 0.64 (ou 64%) significa que 64% da variação no preço é explicada pelo tempo.',
+            example: 'Se R² = 0.81, então 81% da variação de preços é explicada pela tendência temporal.'
+        },
+        {
+            term: 'Assimetria (Skewness)',
+            formula: 'Complexa - mede desvio da simetria',
+            def: 'Mede se a distribuição é simétrica ou inclinada. Zero = simétrica, positivo = cauda à direita (maioria abaixo da média), negativo = cauda à esquerda (maioria acima da média).',
+            example: 'Assimetria positiva: poucos postos muito caros puxam a média para cima.'
+        },
+        {
+            term: 'Curtose',
+            formula: 'Complexa - mede achatamento',
+            def: 'Mede o "achatamento" da distribuição. 3 = normal, > 3 = pico alto (leptocúrtica), < 3 = achatada (platicúrtica). Indica concentração de valores no centro vs. caudas.',
+            example: 'Curtose alta: preços muito concentrados em torno da média com poucos extremos.'
+        },
+        {
+            term: 'Percentil',
+            formula: 'P(k) = valor abaixo do qual estão k% dos dados',
+            def: 'Valor abaixo do qual está um determinado percentual dos dados. P90 = 90º percentil significa que 90% dos dados estão abaixo deste valor.',
+            example: 'P90 = R$ 6,50 significa que 90% dos postos cobram até R$ 6,50.'
+        },
+        {
+            term: 'Regressão Linear',
+            formula: 'y = ax + b',
+            def: 'Técnica que ajusta uma linha reta aos dados para modelar a relação entre variáveis. "a" é o coeficiente angular (inclinação), "b" é o intercepto (valor quando x=0).',
+            example: 'y = 0.05x + 5.0 prevê que preço aumenta R$ 0,05 por semestre, partindo de R$ 5,00.'
+        },
+        {
+            term: 'Tendência',
+            formula: 'Padrão de longo prazo',
+            def: 'Movimento geral dos dados ao longo do tempo, podendo ser crescente, decrescente ou estável. Identifica direção predominante ignorando flutuações de curto prazo.',
+            example: 'Preços cresceram 15% em 3 anos = tendência de alta.'
+        },
+        {
+            term: 'Sazonalidade',
+            formula: 'Padrões regulares periódicos',
+            def: 'Flutuações regulares que se repetem em intervalos fixos (ex: semestral, anual). Pode ser causada por safras, férias, clima, etc.',
+            example: 'Preços sempre sobem no 2º semestre devido a maior demanda em férias de fim de ano.'
+        },
+        {
+            term: 'Amostra vs. População',
+            formula: 'n (amostra) vs. N (população)',
+            def: 'População é o conjunto completo de elementos. Amostra é um subconjunto representativo. Estatísticas calculadas em amostras estimam parâmetros da população.',
+            example: 'População: todos os postos de BH. Amostra: postos coletados neste estudo.'
+        },
+        {
+            term: 'Intervalo de Confiança',
+            formula: 'IC = estimativa ± margem de erro',
+            def: 'Faixa de valores dentro da qual o verdadeiro parâmetro populacional provavelmente está. IC de 95% significa 95% de confiança que o valor real está neste intervalo.',
+            example: 'Preço médio de R$ 5,50 ± R$ 0,20 (IC 95%) = entre R$ 5,30 e R$ 5,70.'
+        }
+    ];
     glossaryEl.innerHTML = terms.map(t => `
         <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
             <h4 class="font-bold text-gray-800 mb-1">${t.term}</h4>
@@ -892,14 +985,6 @@ function createEmptyState() {
     </div>`;
 }
 
-function createWIPState(title, message) {
-    return `<div class="text-center py-16 bg-white rounded-lg shadow">
-        <i data-lucide="construction" class="h-12 w-12 mx-auto text-yellow-500"></i>
-        <h3 class="mt-2 text-lg font-medium text-gray-900">${title} - Em Breve</h3>
-        <p class="mt-1 text-sm text-gray-500">${message}</p>
-    </div>`;
-}
-
 function createBHMap(data, isPrice = false) {
     const regionals = [
         { id: 'Barreiro', d: 'M153 303 L134 321 L126 314 L117 320 L108 310 L108 290 L125 282 L140 285 Z' },
@@ -918,7 +1003,6 @@ function createBHMap(data, isPrice = false) {
     const getColor = (value) => {
         if (max === min || !value) return '#dbeafe'; // Cor base para valor único ou nulo
         const ratio = (value - min) / (max - min);
-        // Interpolação de cor de Azul claro (baixo) para Vermelho (alto)
         const r = Math.round(96 + ratio * (239 - 96));
         const g = Math.round(165 - ratio * (165 - 68));
         const b = Math.round(250 - ratio * (250 - 68));
@@ -933,4 +1017,3 @@ function createBHMap(data, isPrice = false) {
         }).join('')}
     </svg>`;
 }
-
