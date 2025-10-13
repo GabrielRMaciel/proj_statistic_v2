@@ -6,7 +6,6 @@ import {
     renderChapterTemporal, renderChapterRegional, renderChapterCorrelation, renderChapterInsights
 } from './ui.js';
 import { destroyAllCharts } from './charts.js';
-// ===== NOVA IMPORTAÇÃO =====
 import { detectOutliers } from './utils.js';
 
 // --- Estado Global da Aplicação ---
@@ -28,8 +27,6 @@ const chapters = [
 
 async function main() {
     try {
-        // O código de registro do boxplot foi movido para o arquivo js/charts.js
-        
         allData = await loadAllData();
         if (allData.length === 0) {
             throw new Error("Nenhum dado foi carregado. Verifique se os arquivos CSV estão na pasta 'data/' e se os nomes correspondem. Veja o console para erros de rede (404 Not Found).");
@@ -99,8 +96,6 @@ function renderActiveChapter() {
         statsCache[key] = calculatorFn();
         return statsCache[key];
     };
-    
-    // ===== FUNÇÃO 'detectOutliers' REMOVIDA DAQUI =====
 
     switch (activeChapter) {
         case 'overview': 
