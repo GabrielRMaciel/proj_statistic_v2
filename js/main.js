@@ -1,11 +1,13 @@
 // js/main.js
 import { loadAllData } from './data.js';
 import {
-    renderNavigation, renderFilters,
+    renderNavigation, renderFilters, renderGlossary,
     renderChapterOverview, renderChapterDistribution,
     renderChapterTemporal, renderChapterRegional, renderChapterCorrelation, renderChapterInsights
 } from './ui.js';
 import { destroyAllCharts } from './charts.js';
+// ===== NOVA IMPORTAÇÃO =====
+import { detectOutliers } from './utils.js';
 
 // --- Estado Global da Aplicação ---
 let allData = [];
@@ -97,12 +99,8 @@ function renderActiveChapter() {
         statsCache[key] = calculatorFn();
         return statsCache[key];
     };
-    const detectOutliers = (data, q1, q3, iqr) => {
-        if (typeof q1 !== 'number' || typeof q3 !== 'number' || typeof iqr !== 'number') return [];
-        const lowerBound = q1 - 1.5 * iqr;
-        const upperBound = q3 + 1.5 * iqr;
-        return data.filter(d => d < lowerBound || d > upperBound);
-    };
+    
+    // ===== FUNÇÃO 'detectOutliers' REMOVIDA DAQUI =====
 
     switch (activeChapter) {
         case 'overview': 
@@ -129,4 +127,3 @@ function renderActiveChapter() {
 
 // --- Iniciar a aplicação ---
 document.addEventListener('DOMContentLoaded', main);
-
