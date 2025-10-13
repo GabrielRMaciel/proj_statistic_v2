@@ -1,17 +1,9 @@
 // js/charts.js
 import { FUEL_COLORS, formatCurrency } from './utils.js';
 
-// ========== INÍCIO DA CORREÇÃO ==========
-// Registra manualmente o controller e o elemento do Box Plot.
-// O script do plugin (carregado no index.html) anexa seus componentes ao objeto global `window`.
-// Nós precisamos registrar esses componentes na instância do Chart.js que nossos módulos estão usando.
-// Colocar este código aqui garante que o registro aconteça ANTES de qualquer função
-// que tente criar um gráfico de boxplot ser chamada.
 if (window.ChartBoxPlot) {
     Chart.register(ChartBoxPlot.BoxPlotController, ChartBoxPlot.BoxAndWiskers);
 }
-// ========== FIM DA CORREÇÃO ==========
-
 
 export const charts = {};
 
