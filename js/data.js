@@ -55,7 +55,6 @@ function processAndConsolidateData(results, files) {
                         return null;
                     }
 
-                    // Cria um novo objeto com os dados limpos
                     const finalRow = {
                         ...cleanedRow,
                         valorDeVenda: valorVendaNum,
